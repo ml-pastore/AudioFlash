@@ -32,8 +32,15 @@ namespace AudioFlash
 
             
             TestToken t = new TestToken(c);
-            t.TextIn = "Howdy, stranger";
+            //t.TextIn = "Well <break time=\"2000ms\" /> Howdy stranger";
+            t.TextIn = "Are you going to Scarborough fair?";
             t.FileOut = string.Format(@"{0}\sample.wav",c.FileOutPut.SoundFolder);
+
+            await t.testToken(c.Authentication);
+
+            t.TextIn = "What Is the Airspeed Velocity of an Unladen Swallow?";
+            c.Voice = "en-US, Guy24kRUS";
+            t.FileOut = string.Format(@"{0}\sample1.wav",c.FileOutPut.SoundFolder);
 
             await t.testToken(c.Authentication);
 
@@ -86,9 +93,10 @@ namespace AudioFlash
             Console.WriteLine(accessToken);
 
             string body = String.Format(@"<speak {0} "+
-                        "<voice name='{1}'> " +
-                        "{2} </voice></speak>"
-                        , _config.SpeakVersion, _config.Voice, TextIn);
+                        "<voice name='Microsoft Server Speech Text to Speech Voice ({1})'> " +
+                        "<prosody rate='{2}'> " +
+                        "{3} </prosody></voice></speak>"
+                        , _config.SpeakVersion, _config.Voice, _config.ProsodyRate,TextIn);
 
                         
             using (var client = new HttpClient())

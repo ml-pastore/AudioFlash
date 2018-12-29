@@ -6,6 +6,8 @@ public interface IConfig
     string SpeakVersion {set ; get;}
     string OutputFormat {set ; get;}
     string Voice {set ; get;}
+    string ProsodyRate {set ; get;}
+    
     FileOutput FileOutPut {set; get;}
     FileInput FileInPut {set; get;}
 }
@@ -16,6 +18,7 @@ public class Config : IConfig
     public string SpeakVersion {set ; get;}
     public string OutputFormat {set ; get;}
     public string Voice {set ; get;}
+    public string ProsodyRate {set ; get;}
     public FileOutput FileOutPut {set; get;}
     public FileInput FileInPut {set; get;}
 
