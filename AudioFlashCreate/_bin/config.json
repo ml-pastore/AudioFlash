@@ -1,0 +1,15 @@
+{
+"FileOutput": 
+    {
+        "SoundFolder": "_output/sound",
+        "TextFolder": "_output/text",
+        "LogFolder": "_output/log"
+    },
+"FileInput": 
+    {
+        "authFile": "_auth/Auth.json"
+    },
+ "SpeakVersion" : "version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-US'> ",
+ "Voice" : "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)",
+ "OutputFormat" : "riff-24khz-16bit-mono-pcm"
+}
