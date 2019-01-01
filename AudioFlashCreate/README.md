@@ -1,4 +1,4 @@
-Uses Azure Speech API to convert JSON text files to wav files. (TBD)
+Uses Azure Speech API to convert CSV Q&A files to wav output. 
 
 Auth JSON format:
 {

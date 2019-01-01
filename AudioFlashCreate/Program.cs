@@ -25,22 +25,45 @@ namespace AudioFlash
                 Environment.Exit((int) RetCodes.ConfigFileNotFound);
             }
 
-            IConfig c = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configName));
-            
+            IConfig c = new Config();
+            string aa = "bb";
+
+            try{
+                c = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configName));
+            }
+            catch(Exception e)
+            {
+                aa = "cc";
+            }
+
             c.Authentication = JsonConvert.DeserializeObject<Authentication>
                 (File.ReadAllText(c.FileInPut.authFile));
 
-            
-            TestToken t = new TestToken(c);
-            //t.TextIn = "Well <break time=\"2000ms\" /> Howdy stranger";
+            ///// SAMPLE //////
+            TestToken t = new TestToken();
+
+            ISound sndOut = new SoundOutput(c.SoundDefault);
+            t.Sound = sndOut;
             t.TextIn = "Are you going to Scarborough fair?";
             t.FileOut = string.Format(@"{0}\sample.wav",c.FileOutPut.SoundFolder);
 
             await t.testToken(c.Authentication);
 
-            t.TextIn = "What Is the Airspeed Velocity of an Unladen Swallow?";
-            c.Voice = "en-US, Guy24kRUS";
+            ///// SAMPLE //////
+            sndOut = new SoundOutput(c.SoundDefault);
+            sndOut.Language = "de-DE";
+            sndOut.Speaker = "Hedda";
+            t.Sound = sndOut;
+            t.TextIn = "Der, die, oder das?  Aktivität.";
             t.FileOut = string.Format(@"{0}\sample1.wav",c.FileOutPut.SoundFolder);
+
+            await t.testToken(c.Authentication);
+
+            ///// SAMPLE //////
+            sndOut = new SoundOutput(c.SoundDefault);
+            t.TextIn = "Are you STILL going to Scarborough fair?";
+            t.Sound = sndOut;
+            t.FileOut = string.Format(@"{0}\sample2.wav",c.FileOutPut.SoundFolder);
 
             await t.testToken(c.Authentication);
 
@@ -56,15 +79,9 @@ namespace AudioFlash
 
         public string TextIn {set; get;}
         public string FileOut {set; get;}
-     
-        IConfig _config {set; get;}
+        public ISound Sound {set; get;}
 
-        public TestToken(IConfig c)
-        {
-            _config = c;
-        }
-
-        public async Task testToken(Authentication Auth)
+        public async Task testToken(IAuthentication Auth)
         {
 
             // Gets an access token
@@ -92,11 +109,16 @@ namespace AudioFlash
 
             Console.WriteLine(accessToken);
 
+            string speakVer = Sound.SpeakVersion.Replace("!DefaultLang!", Sound.Language);
+
             string body = String.Format(@"<speak {0} "+
                         "<voice name='Microsoft Server Speech Text to Speech Voice ({1})'> " +
                         "<prosody rate='{2}'> " +
                         "{3} </prosody></voice></speak>"
-                        , _config.SpeakVersion, _config.Voice, _config.ProsodyRate,TextIn);
+                        , speakVer
+                        , String.Concat(Sound.Language,", ",Sound.Speaker)
+                        , Sound.ProsodyRate
+                        ,TextIn);
 
                         
             using (var client = new HttpClient())
@@ -109,7 +131,7 @@ namespace AudioFlash
                     request.Headers.Add("Authorization", "Bearer " + accessToken);
                     request.Headers.Add("Connection", "Keep-Alive");
                     request.Headers.Add("User-Agent", resourceName);
-                    request.Headers.Add("X-Microsoft-OutputFormat", _config.OutputFormat);
+                    request.Headers.Add("X-Microsoft-OutputFormat", Sound.OutputFormat);
                     
                     Console.WriteLine("Calling the TTS service. Please wait... \n");
                     

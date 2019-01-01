@@ -1,0 +1,19 @@
+TODO:
+
+- need override: xml:lang='en-US' (from config.json)
+	[!]DefaultLang[!]
+
+DONE:
+
+
+////// SCRATCH //////
+
+en-US, ZiraRUS
+en-US, JessaRUS
+en-US, BenjaminRUS
+
+
+de-CH, Karsten
+de-DE, Hedda
+de-DE, HeddaRUS
+de-DE, Stefan, Apollo

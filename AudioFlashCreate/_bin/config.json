@@ -7,10 +7,22 @@
     },
 "FileInput": 
     {
-        "authFile": "_auth/Auth.json"
+        "authFile": "_auth/Auth.json",
+        "CSVFiles": ["_input/|*.csv"]
     },
-"SpeakVersion" : "version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-US'> ",
-"Voice" : "en-US, ZiraRUS",
-"ProsodyRate" : "-20%",
-"OutputFormat" : "riff-24khz-16bit-mono-pcm"
+"SoundDefault":
+    {
+        "SpeakVersion" : "version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='!DefaultLang!'>",
+        "ProsodyRate" : "-20%",
+        "OutputFormat" : "riff-24khz-16bit-mono-pcm",
+        "Language" : "en-US",
+        "Speaker" : "BenjaminRUS",
+        "Speakers" : [ {"Language" : "en-US", "Voice": "ZiraRUS"},
+                    {"Language" : "en-US",  "Voice": "JessaRUS"},
+                    {"Language" : "en-US",  "Voice":  "BenjaminRUS"},
+                    {"Language" : "de-DE",  "Voice":  "Karsten"},
+                    {"Language" : "de-DE",   "Voice": "Hedda"},
+                    {"Language" : "de-DE",  "Voice": "Stefan"}
+        ]
+    }
 }

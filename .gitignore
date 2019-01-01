@@ -2,4 +2,5 @@ _auth
 bin
 .vscode
 obj
+_input
 _output

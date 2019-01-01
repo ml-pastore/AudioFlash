@@ -4,15 +4,24 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 
-public class Authentication
+public interface IAuthentication
+{
+    string tokenFetchUri {set; get;}
+    string subscriptionKey {set; get;}
+    string resourceName {set; get;}
+    string hostName {set; get;}
+    void AssertAuthentication();
+    Task<string> FetchTokenAsync();
+
+}
+public class Authentication : IAuthentication
 {
 
-    
     public string tokenFetchUri {set; get;}
     public string subscriptionKey {set; get;}
     public string resourceName {set; get;}
     public string hostName {set; get;}
-
+    
  
     public void AssertAuthentication()
     {

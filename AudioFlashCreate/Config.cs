@@ -1,24 +1,19 @@
 using System;
+using System.Collections.Generic;
 
 public interface IConfig
 {
-    Authentication Authentication {set; get;}
-    string SpeakVersion {set ; get;}
-    string OutputFormat {set ; get;}
-    string Voice {set ; get;}
-    string ProsodyRate {set ; get;}
-    
+    IAuthentication Authentication {set; get;}
+    SoundDefault SoundDefault {set; get;}
     FileOutput FileOutPut {set; get;}
     FileInput FileInPut {set; get;}
 }
 public class Config : IConfig
 {
 
-    public Authentication Authentication {set; get;}
-    public string SpeakVersion {set ; get;}
-    public string OutputFormat {set ; get;}
-    public string Voice {set ; get;}
-    public string ProsodyRate {set ; get;}
+    public IAuthentication Authentication {set; get;}
+    public SoundDefault SoundDefault {set; get;}
+
     public FileOutput FileOutPut {set; get;}
     public FileInput FileInPut {set; get;}
 
@@ -27,6 +22,8 @@ public class Config : IConfig
 public class FileInput
 {
     public string authFile { get; set; }
+    List<string> CSVFiles { get; set; } // path + file mask
+
 }
 
 public class FileOutput
@@ -35,5 +32,22 @@ public class FileOutput
     public string TextFolder { get; set; }
     public string LogFolder { get; set; }
 }
+
+public interface ISoundDefault : ISound
+{
+    List<Speaker> Speakers {set ; get;}
+}
+public class SoundDefault : ISoundDefault
+{
+    public string SpeakVersion {set ; get;}
+    public string OutputFormat {set ; get;}
+    public string Language {set ; get;}
+    public string Speaker {set ; get;}
+    public List<Speaker> Speakers {set ; get;}
+    public string ProsodyRate {set ; get;}
+
+}
+
+
 
 
