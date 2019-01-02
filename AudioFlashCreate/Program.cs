@@ -2,6 +2,8 @@
 using System.Net.Http;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -10,7 +12,7 @@ namespace AudioFlash
     class Program
     {
 
-        public enum RetCodes {Success, InvalidParm, ConfigFileNotFound}
+        public enum RetCodes {Success, InvalidParm, ConfigFileNotFound, InvalidConfigInit, NoRecs}
 
         static async Task Main(string[] args)
         {
@@ -24,143 +26,162 @@ namespace AudioFlash
                 Console.WriteLine($"File does not exist: {configName}");
                 Environment.Exit((int) RetCodes.ConfigFileNotFound);
             }
-
+        
             IConfig c = new Config();
-            string aa = "bb";
-
-            try{
+          
+            try
+            {
                 c = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configName));
+                c.Authentication = JsonConvert.DeserializeObject<Authentication>(File.ReadAllText(c.FileInPut.authFile));
             }
             catch(Exception e)
             {
-                aa = "cc";
+                Environment.Exit((int) RetCodes.InvalidConfigInit);
             }
 
-            c.Authentication = JsonConvert.DeserializeObject<Authentication>
-                (File.ReadAllText(c.FileInPut.authFile));
+            IEnumerable<CSVInput> allQuests = GetAllQuestions(c);
+            
+            // build wav output
+            int fileCntr = 0;
+            int numRecs = allQuests.Where(x => x.IsActive.ToUpper() == "TRUE").Count();
 
+            if(numRecs == 0)
+              Environment.Exit((int) RetCodes.NoRecs);
+
+            int numZeros = Convert.ToInt32(Math.Log10(numRecs));
+            
+            foreach (CSVInput ln in allQuests.Where(x => x.IsActive.ToUpper() == "TRUE"))
+            {
+
+                // question and answer might have different output characteristics (lang, voice, prosody rate)
+
+               
+                string outFileName = string.Format(@"{0}\{1}.wav",c.FileOutPut.SoundFolder
+                    , c.FileOutPut.WAVPrefix.Replace("{#}", fileCntr.ToString().PadLeft(numZeros,'0')));
+
+                List<TTS_QA> QA = new List<TTS_QA>();
+                
+                QA.Add(new TTS_QA{QAText = ln.Question, Lang = ln.QuesLang, ProsodyRate = ln.QuesProsodyRate, QorA = outFileName.Replace(".wav","_ques.wav")});
+                QA.Add(new TTS_QA{QAText = string.Format("<break time={2}{0}ms{2}/> {1}", Convert.ToInt32(ln.AnswerWaitSeconds) * 1000,ln.Answer, '"')
+                    , Lang = ln.AnsLang, ProsodyRate = ln.AnsProsodyRate, QorA = outFileName.Replace(".wav","_resp.wav")});
+
+                foreach(TTS_QA qa in QA)
+                {
+                    TextToSpeech t = new TextToSpeech();
+
+                    ISound sndOut = new SoundOutput(c.SoundDefault);
+                    t.Sound = sndOut;
+
+                    // question or answer
+                    t.TextIn = qa.QAText;
+                    t.Sound.Language = GetSoundProp(qa.Lang, c.SoundDefault.Language);
+                    // random speaker from avail list
+                    string spkr = GetRandSpeakerName(t.Sound.Language, c.SoundDefault.Speakers);
+                    t.Sound.Speaker = GetSoundProp(spkr, c.SoundDefault.Speaker);
+                    t.Sound.ProsodyRate = GetSoundProp(qa.ProsodyRate, c.SoundDefault.ProsodyRate);
+
+                    t.FileOut =  qa.QorA ;//string.Format(@"{0}\{1}.wav",c.FileOutPut.SoundFolder, qa.QorA);
+
+                    while(File.Exists(t.FileOut))
+                        File.Delete(t.FileOut);
+
+                    await t.testToken(c.Authentication);
+                }
+              
+                // TODO, merge Q & A wav files
+
+                fileCntr++;
+            }
+
+          
             ///// SAMPLE //////
-            TestToken t = new TestToken();
+            // TextToSpeech t = new TextToSpeech();
 
-            ISound sndOut = new SoundOutput(c.SoundDefault);
-            t.Sound = sndOut;
-            t.TextIn = "Are you going to Scarborough fair?";
-            t.FileOut = string.Format(@"{0}\sample.wav",c.FileOutPut.SoundFolder);
+            // ISound sndOut = new SoundOutput(c.SoundDefault);
+            // t.Sound = sndOut;
+            // t.TextIn = "Are you going to Scarborough fair?";
+            // t.FileOut = string.Format(@"{0}\sample.wav",c.FileOutPut.SoundFolder);
 
-            await t.testToken(c.Authentication);
+            // await t.testToken(c.Authentication);
 
-            ///// SAMPLE //////
-            sndOut = new SoundOutput(c.SoundDefault);
-            sndOut.Language = "de-DE";
-            sndOut.Speaker = "Hedda";
-            t.Sound = sndOut;
-            t.TextIn = "Der, die, oder das?  Aktivität.";
-            t.FileOut = string.Format(@"{0}\sample1.wav",c.FileOutPut.SoundFolder);
+            // ///// SAMPLE //////
+            // sndOut = new SoundOutput(c.SoundDefault);
+            // sndOut.Language = "de-DE";
+            // sndOut.Speaker = "Hedda";
+            // t.Sound = sndOut;
+            // t.TextIn = "Der, die, oder das?  Aktivität.";
+            // t.FileOut = string.Format(@"{0}\sample1.wav",c.FileOutPut.SoundFolder);
 
-            await t.testToken(c.Authentication);
+            // await t.testToken(c.Authentication);
 
-            ///// SAMPLE //////
-            sndOut = new SoundOutput(c.SoundDefault);
-            t.TextIn = "Are you STILL going to Scarborough fair?";
-            t.Sound = sndOut;
-            t.FileOut = string.Format(@"{0}\sample2.wav",c.FileOutPut.SoundFolder);
+            // ///// SAMPLE //////
+            // sndOut = new SoundOutput(c.SoundDefault);
+            // t.TextIn = "Are you STILL going to Scarborough fair?";
+            // t.Sound = sndOut;
+            // t.FileOut = string.Format(@"{0}\sample2.wav",c.FileOutPut.SoundFolder);
 
-            await t.testToken(c.Authentication);
+            // await t.testToken(c.Authentication);
 
             Console.WriteLine($"Done");
             Environment.Exit((int) RetCodes.Success);
         
         }
 
-    }
+        class TTS_QA
+        {
+            public string QAText {set; get;}
+            public string Lang {set; get;}
+            public string ProsodyRate {set; get;}
+            public string QorA {set; get;}
+        }
 
-    class TestToken
-    {
+        static string GetSoundProp(string sndProp, string sndDefault)
+        {
+            string ret = sndProp.ToUpper().Trim() == "DEFAULT" ? sndDefault : sndProp;
+            return ret;
+        }
 
-        public string TextIn {set; get;}
-        public string FileOut {set; get;}
-        public ISound Sound {set; get;}
-
-        public async Task testToken(IAuthentication Auth)
+         static string GetRandSpeakerName(string lang, List<Speaker> speakers)
         {
 
-            // Gets an access token
-          
-            string myURI = Auth.tokenFetchUri;
-            string myKey = Auth.subscriptionKey;
-            string resourceName = Auth.resourceName;
-            string host = Auth.hostName;
+            List<Speaker> spkrs = speakers.Where(x => x.Language.ToUpper().Trim() == lang.ToUpper().Trim()).ToList();
+            int cnt = spkrs.Count;
 
-            string accessToken;
-            Console.WriteLine("Attempting token exchange. Please wait...\n");
+            if(cnt == 0)
+                return "DEFAULT";
 
-            try
+            var rand = new Random();
+            var spkr = spkrs[rand.Next(spkrs.Count)].Voice;
+
+            return spkr;
+            
+        }
+
+        static IEnumerable<CSVInput> GetAllQuestions(IConfig c)
+        {
+
+            List<CSVInput> ret = new List<CSVInput>();
+
+            foreach(string inCSVMask in c.FileInPut.CSVFiles)
             {
-                accessToken = await Auth.FetchTokenAsync().ConfigureAwait(false);
-                Console.WriteLine("Successfully obtained an access token. \n");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Failed to obtain an access token.");
-                Console.WriteLine(ex.ToString());
-                Console.WriteLine(ex.Message);
-                return;
-            }
+                Console.WriteLine(inCSVMask);
 
-            Console.WriteLine(accessToken);
+                string[] parts = inCSVMask.Split('|');
+                string[] files = Directory.GetFiles(parts[0], parts[1]);
 
-            string speakVer = Sound.SpeakVersion.Replace("!DefaultLang!", Sound.Language);
-
-            string body = String.Format(@"<speak {0} "+
-                        "<voice name='Microsoft Server Speech Text to Speech Voice ({1})'> " +
-                        "<prosody rate='{2}'> " +
-                        "{3} </prosody></voice></speak>"
-                        , speakVer
-                        , String.Concat(Sound.Language,", ",Sound.Speaker)
-                        , Sound.ProsodyRate
-                        ,TextIn);
-
-                        
-            using (var client = new HttpClient())
-            {
-                using (var request = new HttpRequestMessage())
+                foreach(string f in files)
                 {
-                    request.Method = HttpMethod.Post;
-                    request.RequestUri = new Uri(host);
-                    request.Content = new StringContent(body, Encoding.UTF8, "application/ssml+xml");
-                    request.Headers.Add("Authorization", "Bearer " + accessToken);
-                    request.Headers.Add("Connection", "Keep-Alive");
-                    request.Headers.Add("User-Agent", resourceName);
-                    request.Headers.Add("X-Microsoft-OutputFormat", Sound.OutputFormat);
-                    
-                    Console.WriteLine("Calling the TTS service. Please wait... \n");
-                    
-                    using (var response = await client.SendAsync(request).ConfigureAwait(false))
-                    {
-                        response.EnsureSuccessStatusCode();
-                        using (var dataStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                        {
-                            Console.WriteLine("Your speech file is being written to file {0}...", FileOut);
-                            using (var fileStream = new FileStream(FileOut
-                                , FileMode.Create, FileAccess.Write, FileShare.Write))
-                            {
-                                await dataStream.CopyToAsync(fileStream).ConfigureAwait(false);
-                                fileStream.Close();
-                            }
-                            Console.WriteLine("\nYour file is ready. ");
-                            
-                        }
-                    }
+                    Console.WriteLine(f);
+                    CSVInput csv = new CSVInput();
+                    IEnumerable<CSVInput> tmp = csv.GetRecs(f);
+                    ret.AddRange(tmp);
                 }
             }
 
+            return ret;
+          
+        } // GetAllQuestions()
 
-
-
-
-
-        } // testToken()
-
-
-    }
-}
+    } // class Program
+   
+} // namespace AudioFlash

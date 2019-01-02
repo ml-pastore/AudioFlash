@@ -22,13 +22,14 @@ public class Config : IConfig
 public class FileInput
 {
     public string authFile { get; set; }
-    List<string> CSVFiles { get; set; } // path + file mask
+    public List<string> CSVFiles { get; set; } // path + file mask
 
 }
 
 public class FileOutput
 {
     public string SoundFolder { get; set; }
+    public string WAVPrefix { get; set; }
     public string TextFolder { get; set; }
     public string LogFolder { get; set; }
 }

@@ -2,13 +2,15 @@
 "FileOutput": 
     {
         "SoundFolder": "_output/sound",
+        "WAVPrefix": "QA_{#}",
         "TextFolder": "_output/text",
         "LogFolder": "_output/log"
     },
 "FileInput": 
     {
         "authFile": "_auth/Auth.json",
-        "CSVFiles": ["_input/|*.csv"]
+        "CSVFiles": ["_input/|sample_01.csv"
+            ,"_input/|*_02x.csv"]
     },
 "SoundDefault":
     {
@@ -20,9 +22,9 @@
         "Speakers" : [ {"Language" : "en-US", "Voice": "ZiraRUS"},
                     {"Language" : "en-US",  "Voice": "JessaRUS"},
                     {"Language" : "en-US",  "Voice":  "BenjaminRUS"},
-                    {"Language" : "de-DE",  "Voice":  "Karsten"},
+                    {"Language" : "de-DE",  "Voice":  "HeddaRUS"},
                     {"Language" : "de-DE",   "Voice": "Hedda"},
-                    {"Language" : "de-DE",  "Voice": "Stefan"}
+                    {"Language" : "de-DE",   "Voice": "Stefan, Apollo"}
         ]
     }
 }
