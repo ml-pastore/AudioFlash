@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using CsvHelper;
+using CsvHelper.Configuration;
 
 public class CSVInput
 {
@@ -16,7 +17,7 @@ public class CSVInput
     public string QuesProsodyRate {set; get;}
     public string AnsLang {set; get;}
     public string AnsProsodyRate {set; get;}
-    
+    public string SourceCSVFile {set; get;}
     
 
     private string _fileEncode = "iso-8859-1";
@@ -28,6 +29,7 @@ public class CSVInput
         StreamReader reader = new StreamReader(absPath,  Encoding.GetEncoding(_fileEncode), true);
         var csv = new CsvReader(reader);
         csv.Configuration.HasHeaderRecord = true;
+        csv.Configuration.RegisterClassMap<CSVInputMap>();
         ret = csv.GetRecords<CSVInput>();
 
         return ret;
@@ -37,8 +39,12 @@ public class CSVInput
  
 }
 
-// public class CSVInputTagged : CSVInput
-// {
-//     public string SourceFile {set; get;}
 
-// }
+public class CSVInputMap : ClassMap<CSVInput>
+{
+    public CSVInputMap()
+    {
+        AutoMap();
+        Map( m => m.SourceCSVFile).Ignore();
+    }
+}

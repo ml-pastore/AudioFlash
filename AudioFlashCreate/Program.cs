@@ -137,26 +137,34 @@ namespace AudioFlash
 
             List<CSVInput> ret = new List<CSVInput>();
 
-            foreach(string inCSVMask in c.FileInPut.CSVFiles)
+            foreach (string inCSVMask in c.FileInPut.CSVFiles)
             {
                 Console.WriteLine(inCSVMask);
 
                 string[] parts = inCSVMask.Split('|');
                 string[] files = Directory.GetFiles(parts[0], parts[1]);
 
-                foreach(string f in files)
+                foreach (string f in files)
                 {
                     Console.WriteLine(f);
                     CSVInput csv = new CSVInput();
-                    IEnumerable<CSVInput> tmp = csv.GetRecs(f);
+                    List<CSVInput> tmp = csv.GetRecs(f).ToList();
+
+                    foreach (CSVInput fn in tmp)
+                        fn.SourceCSVFile = f;
+
                     ret.AddRange(tmp);
                 }
             }
 
-            return ret;
-          
+            return NewMethod(ret);
+
         } // GetAllQuestions()
 
+        private static IEnumerable<CSVInput> NewMethod(List<CSVInput> ret)
+        {
+            return ret;
+        }
     } // class Program
    
 } // namespace AudioFlash
