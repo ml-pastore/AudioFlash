@@ -69,7 +69,7 @@ namespace AudioFlash
                 string pauseText = $"<break time=\"{pauseSec}ms\"/>";
 
                 // question
-                QA.Add(new TTS_QA{QAText = $"{pauseText} {ln.Question}",
+                QA.Add(new TTS_QA{QAText = $"{ln.Question} {pauseText}",
                     Lang = ln.QuesLang, ProsodyRate = ln.QuesProsodyRate, OutFile = outFileName.Replace(".wav","_ques.wav")});
 
                 // response
@@ -162,14 +162,10 @@ namespace AudioFlash
                 }
             }
 
-            return NewMethod(ret);
+            return ret;
 
         } // GetAllQuestions()
 
-        private static IEnumerable<CSVInput> NewMethod(List<CSVInput> ret)
-        {
-            return ret;
-        }
-    } // class Program
+     } // class Program
    
 } // namespace AudioFlash
