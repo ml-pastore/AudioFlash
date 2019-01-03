@@ -2,6 +2,7 @@ _auth
 bin
 .vscode
 obj
-_input
-_output
-_todo
+AudioFlashCreate/_input
+AudioFlashCreate/_output
+AudioFlashCreate/_todo
+AudioFlashCreate/_bin

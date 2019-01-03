@@ -1,0 +1,28 @@
+{
+"FileOutput": 
+    {
+        "SoundFolder": "_samples/_output",
+        "WAVPrefix": "QA_{#}",
+        "LogFolder": "_samples/_log"
+    },
+"FileInput": 
+    {
+        "authFile": "_auth/Auth.json",
+        "CSVFiles": ["_samples/_input/|*.csv"]
+    },
+"SoundDefault":
+    {
+        "SpeakVersion" : "version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='!DefaultLang!'>",
+        "ProsodyRate" : "-20%",
+        "OutputFormat" : "riff-24khz-16bit-mono-pcm",
+        "Language" : "en-US",
+        "Speaker" : "BenjaminRUS",
+        "Speakers" : [ {"Language" : "en-US", "Voice": "ZiraRUS"},
+                    {"Language" : "en-US",  "Voice": "JessaRUS"},
+                    {"Language" : "en-US",  "Voice":  "BenjaminRUS"},
+                    {"Language" : "de-DE",  "Voice":  "HeddaRUS"},
+                    {"Language" : "de-DE",   "Voice": "Hedda"},
+                    {"Language" : "de-DE",   "Voice": "Stefan, Apollo"}
+        ]
+    }
+}

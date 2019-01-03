@@ -30,7 +30,6 @@ public class FileOutput
 {
     public string SoundFolder { get; set; }
     public string WAVPrefix { get; set; }
-    public string TextFolder { get; set; }
     public string LogFolder { get; set; }
 }
 

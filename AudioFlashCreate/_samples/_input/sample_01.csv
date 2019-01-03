@@ -1,0 +1,7 @@
+﻿Category,IsActive,Question,Answer,AnswerWaitSeconds,QuesLang,QuesProsodyRate,AnsLang,AnsProsodyRate
+Cities,TRUE,What is the capitol of Rhode Island?,Providence,1,Default,Default,en-US,Default
+Food,TRUE,True or false. An apple is not a vegetable.,TRUE,1,en-US,-20%,en-US,-20%
+Ethics,TRUE,Yes or no. Fraud is generally OK.,No,1,en-US,Default,Default,Default
+Animals,TRUE,Which is false? A. Kittens are young cats. B. Puppies are young dogs. C. Heifers are young cows.,None are false.,1,en-US,30%,en-US,30%
+Language,TRUE,"Der, die, oder das?  Aktivität.",Die,1,de-DE,-20%,de-DE,-20%
+Language,TRUE,"Translate child, the children",Das Kind.  Die Kinder.,1,en-US,Default,de-DE,Default

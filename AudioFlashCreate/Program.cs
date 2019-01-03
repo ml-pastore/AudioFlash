@@ -17,7 +17,12 @@ namespace AudioFlash
         static async Task Main(string[] args)
         {
 
-            string configName = "_bin/config.json";
+            string configName = ""; 
+            
+            if(args.Length > 0)
+                configName = args[0];
+            else
+                configName = "_samples/_bin/config_sample.json";
             
             Console.WriteLine($"{configName}");
             
