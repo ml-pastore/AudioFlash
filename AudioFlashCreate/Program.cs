@@ -52,18 +52,24 @@ namespace AudioFlash
             
             foreach (CSVInput ln in allQuests.Where(x => x.IsActive.ToUpper() == "TRUE"))
             {
-
-                // question and answer might have different output characteristics (lang, voice, prosody rate)
-
-               
+     
                 string outFileName = string.Format(@"{0}\{1}.wav",c.FileOutPut.SoundFolder
                     , c.FileOutPut.WAVPrefix.Replace("{#}", fileCntr.ToString().PadLeft(numZeros,'0')));
 
-                List<TTS_QA> QA = new List<TTS_QA>();
                 
-                QA.Add(new TTS_QA{QAText = ln.Question, Lang = ln.QuesLang, ProsodyRate = ln.QuesProsodyRate, QorA = outFileName.Replace(".wav","_ques.wav")});
-                QA.Add(new TTS_QA{QAText = string.Format("<break time={2}{0}ms{2}/> {1}", Convert.ToInt32(ln.AnswerWaitSeconds) * 1000,ln.Answer, '"')
-                    , Lang = ln.AnsLang, ProsodyRate = ln.AnsProsodyRate, QorA = outFileName.Replace(".wav","_resp.wav")});
+                // question and answer might have different output characteristics (language, voice, prosody rate)
+                List<TTS_QA> QA = new List<TTS_QA>();
+
+                int pauseSec = Convert.ToInt32(ln.AnswerWaitSeconds) * 1000;
+                string pauseText = $"<break time=\"{pauseSec}ms\"/>";
+
+                // question
+                QA.Add(new TTS_QA{QAText = $"{pauseText} {ln.Question}",
+                    Lang = ln.QuesLang, ProsodyRate = ln.QuesProsodyRate, OutFile = outFileName.Replace(".wav","_ques.wav")});
+
+                // response
+                QA.Add(new TTS_QA{QAText = ln.Answer,
+                    Lang = ln.AnsLang, ProsodyRate = ln.AnsProsodyRate, OutFile = outFileName.Replace(".wav","_resp.wav")});
 
                 foreach(TTS_QA qa in QA)
                 {
@@ -80,7 +86,7 @@ namespace AudioFlash
                     t.Sound.Speaker = GetSoundProp(spkr, c.SoundDefault.Speaker);
                     t.Sound.ProsodyRate = GetSoundProp(qa.ProsodyRate, c.SoundDefault.ProsodyRate);
 
-                    t.FileOut =  qa.QorA ;//string.Format(@"{0}\{1}.wav",c.FileOutPut.SoundFolder, qa.QorA);
+                    t.FileOut =  qa.OutFile ;
 
                     while(File.Exists(t.FileOut))
                         File.Delete(t.FileOut);
@@ -88,39 +94,8 @@ namespace AudioFlash
                     await t.testToken(c.Authentication);
                 }
               
-                // TODO, merge Q & A wav files
-
                 fileCntr++;
             }
-
-          
-            ///// SAMPLE //////
-            // TextToSpeech t = new TextToSpeech();
-
-            // ISound sndOut = new SoundOutput(c.SoundDefault);
-            // t.Sound = sndOut;
-            // t.TextIn = "Are you going to Scarborough fair?";
-            // t.FileOut = string.Format(@"{0}\sample.wav",c.FileOutPut.SoundFolder);
-
-            // await t.testToken(c.Authentication);
-
-            // ///// SAMPLE //////
-            // sndOut = new SoundOutput(c.SoundDefault);
-            // sndOut.Language = "de-DE";
-            // sndOut.Speaker = "Hedda";
-            // t.Sound = sndOut;
-            // t.TextIn = "Der, die, oder das?  Aktivität.";
-            // t.FileOut = string.Format(@"{0}\sample1.wav",c.FileOutPut.SoundFolder);
-
-            // await t.testToken(c.Authentication);
-
-            // ///// SAMPLE //////
-            // sndOut = new SoundOutput(c.SoundDefault);
-            // t.TextIn = "Are you STILL going to Scarborough fair?";
-            // t.Sound = sndOut;
-            // t.FileOut = string.Format(@"{0}\sample2.wav",c.FileOutPut.SoundFolder);
-
-            // await t.testToken(c.Authentication);
 
             Console.WriteLine($"Done");
             Environment.Exit((int) RetCodes.Success);
@@ -132,7 +107,7 @@ namespace AudioFlash
             public string QAText {set; get;}
             public string Lang {set; get;}
             public string ProsodyRate {set; get;}
-            public string QorA {set; get;}
+            public string OutFile {set; get;}
         }
 
         static string GetSoundProp(string sndProp, string sndDefault)
