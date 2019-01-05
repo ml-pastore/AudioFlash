@@ -96,7 +96,7 @@ namespace AudioFlash
                     while(File.Exists(t.FileOut))
                         File.Delete(t.FileOut);
 
-                    await t.testToken(c.Authentication);
+                    await t.OutPutTTS(c.Authentication);
                 }
               
                 fileCntr++;

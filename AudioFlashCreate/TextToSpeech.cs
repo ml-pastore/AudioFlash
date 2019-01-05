@@ -10,7 +10,7 @@ public class TextToSpeech
     public string FileOut {set; get;}
     public ISound Sound {set; get;}
 
-    public async Task testToken(IAuthentication Auth)
+    public async Task OutPutTTS(IAuthentication Auth)
     {
 
         // Gets an access token
