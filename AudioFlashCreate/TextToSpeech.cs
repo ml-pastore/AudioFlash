@@ -35,7 +35,7 @@ public class TextToSpeech
             return;
         }
 
-        Console.WriteLine(accessToken);
+        //Console.WriteLine(accessToken);
 
         string speakVer = Sound.SpeakVersion.Replace("!DefaultLang!", Sound.Language);
 

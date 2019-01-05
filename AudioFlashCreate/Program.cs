@@ -44,16 +44,21 @@ namespace AudioFlash
                 Environment.Exit((int) RetCodes.InvalidConfigInit);
             }
 
+            ILogger lg = new Logger();
+            lg.LogFile = String.Concat(c.FileOutPut.LogFolder, "/runLog.txt");
+            lg.Write(new string('-', 50));
+            lg.Write($"{DateTime.Now}");
+           
             IEnumerable<CSVInput> allQuests = GetAllQuestions(c);
             
             // build wav output
-            int fileCntr = 0;
+            int fileCntr = c.FileOutPut.StartOutNum;
             int numRecs = allQuests.Where(x => x.IsActive.ToUpper() == "TRUE").Count();
 
             if(numRecs == 0)
               Environment.Exit((int) RetCodes.NoRecs);
 
-            int numZeros = Convert.ToInt32(Math.Log10(numRecs));
+            int numZeros = Convert.ToInt32(Math.Log10(numRecs)+1);
             
             foreach (CSVInput ln in allQuests.Where(x => x.IsActive.ToUpper() == "TRUE"))
             {
@@ -68,14 +73,21 @@ namespace AudioFlash
                 int pauseSec = Convert.ToInt32(ln.AnswerWaitSeconds) * 1000;
                 string pauseText = $"<break time=\"{pauseSec}ms\"/>";
 
+                string question = $"{ln.Question} {pauseText}";
+
+                if(! c.FileOutPut.SplitQAFiles)
+                    question = String.Concat(question, " " , ln.Answer); 
+                
                 // question
-                QA.Add(new TTS_QA{QAText = $"{ln.Question} {pauseText}",
+                QA.Add(new TTS_QA{QAText = question,
                     Lang = ln.QuesLang, ProsodyRate = ln.QuesProsodyRate, OutFile = outFileName.Replace(".wav","_ques.wav")});
 
-                // response
-                QA.Add(new TTS_QA{QAText = ln.Answer,
-                    Lang = ln.AnsLang, ProsodyRate = ln.AnsProsodyRate, OutFile = outFileName.Replace(".wav","_resp.wav")});
-
+                if(c.FileOutPut.SplitQAFiles)
+                {
+                    QA.Add(new TTS_QA{QAText = ln.Answer,
+                        Lang = ln.AnsLang, ProsodyRate = ln.AnsProsodyRate, OutFile = outFileName.Replace(".wav","_resp.wav")});
+                }
+                
                 foreach(TTS_QA qa in QA)
                 {
                     TextToSpeech t = new TextToSpeech();
@@ -93,6 +105,15 @@ namespace AudioFlash
 
                     t.FileOut =  qa.OutFile ;
 
+                    lg.Write(".".PadLeft(20,'.'));
+
+                    if(! string.IsNullOrEmpty(t.TextIn))
+                    {
+                        lg.Write($"Text: {t.TextIn.Substring(0, Math.Min(t.TextIn.Length, 20))} ...");
+                    }
+
+                    lg.Write($"{t.FileOut}");
+
                     while(File.Exists(t.FileOut))
                         File.Delete(t.FileOut);
 
@@ -101,6 +122,9 @@ namespace AudioFlash
               
                 fileCntr++;
             }
+
+            lg.Write("Done");
+            lg.Dispose();
 
             Console.WriteLine($"Done");
             Environment.Exit((int) RetCodes.Success);

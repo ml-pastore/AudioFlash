@@ -19,10 +19,7 @@ public class SoundOutput : ISound
         this.OutputFormat = def.OutputFormat;
         this.Language = def.Language;
         this.ProsodyRate = def.ProsodyRate;
-        
-        this.Speaker = def.Speaker;
-        
-
+        this.Speaker = def.Speaker;   
     }
 
     public string SpeakVersion {set ; get;}

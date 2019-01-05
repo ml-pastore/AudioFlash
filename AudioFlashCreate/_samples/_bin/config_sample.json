@@ -3,6 +3,8 @@
     {
         "SoundFolder": "_samples/_output",
         "WAVPrefix": "QA_{#}",
+        "StartOutNum": "0",
+        "SplitQAFiles": "True",
         "LogFolder": "_samples/_log"
     },
 "FileInput": 

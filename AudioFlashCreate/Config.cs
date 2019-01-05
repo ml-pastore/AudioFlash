@@ -13,10 +13,8 @@ public class Config : IConfig
 
     public IAuthentication Authentication {set; get;}
     public SoundDefault SoundDefault {set; get;}
-
     public FileOutput FileOutPut {set; get;}
     public FileInput FileInPut {set; get;}
-
 }
 
 public class FileInput
@@ -30,6 +28,8 @@ public class FileOutput
 {
     public string SoundFolder { get; set; }
     public string WAVPrefix { get; set; }
+    public  bool SplitQAFiles {set; get;}
+    public int StartOutNum { get; set; }
     public string LogFolder { get; set; }
 }
 
@@ -45,7 +45,7 @@ public class SoundDefault : ISoundDefault
     public string Speaker {set ; get;}
     public List<Speaker> Speakers {set ; get;}
     public string ProsodyRate {set ; get;}
-
+    
 }
 
 
