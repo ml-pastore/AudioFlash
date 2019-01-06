@@ -1,0 +1,3 @@
+﻿Category,IsActive,Question,Answer,AnswerWaitSeconds,QuesLang,QuesProsodyRate,AnsLang,AnsProsodyRate
+Language,TRUE,On which side sits the steering wheel in England?,On the right side.,2,Default,Default,en-US,Default
+Language,TRUE, Wahr oder falsch. Ein Hund ist ein Nagetier,Falsch,2,de-DE,Default,de-DE,Default

@@ -19,6 +19,7 @@ public class CSVInput
     public string AnsLang {set; get;}
     public string AnsProsodyRate {set; get;}
     public string SourceCSVFile {set; get;}
+    public int FileLineNum {set; get;}
     
 
     private string _fileEncode = "iso-8859-1";
@@ -55,8 +56,12 @@ public class CSVInput
                 CSVInput csv = new CSVInput();
                 List<CSVInput> tmp = csv.GetRecs(f).ToList();
 
-                foreach (CSVInput fn in tmp)
+                int lnCtr = 0;
+
+                foreach (CSVInput fn in tmp){
                     fn.SourceCSVFile = f;
+                    fn.FileLineNum = lnCtr++;
+                }
 
                 ret.AddRange(tmp);
             }
@@ -75,5 +80,6 @@ public class CSVInputMap : ClassMap<CSVInput>
     {
         AutoMap();
         Map( m => m.SourceCSVFile).Ignore();
+        Map( m => m.FileLineNum).Ignore();
     }
 }

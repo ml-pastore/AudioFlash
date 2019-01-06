@@ -70,10 +70,13 @@ namespace AudioFlash
             
             TTS_QA[] ttsQA = {new TTS_QA(), new TTS_QA()};
             string outFileNameBase = "";
-
+            
             foreach (CSVInput ln in allQuests.Where(x => x.IsActive.ToUpper() == "TRUE"))
             {
-     
+                
+                lg.Write("-".PadLeft(20,'-'));
+                lg.Write($"Src file: {ln.SourceCSVFile}, Line#: {ln.FileLineNum}");
+
                 outFileNameBase = string.Format(@"{0}\{1}.wav",c.FileOutPut.SoundFolder
                     , c.FileOutPut.WAVPrefix.Replace("{#}", fileCntr.ToString().PadLeft(numZeros,'0')));
                 
@@ -105,14 +108,10 @@ namespace AudioFlash
 
                     t.FileOut =  qa.OutFile ;
 
-                    lg.Write(".".PadLeft(20,'.'));
-
                     if(! string.IsNullOrEmpty(t.TextIn))
                     {
-                        lg.Write($"Text: {t.TextIn.Substring(0, Math.Min(t.TextIn.Length, 20))} ...");
+                        lg.Write($"Spkr: {t.Sound.Speaker}, Text: {t.TextIn.Substring(0, Math.Min(t.TextIn.Length, 20))} ... -> {t.FileOut}");
                     }
-
-                    lg.Write($"{t.FileOut}");
 
                     while(File.Exists(t.FileOut))
                         File.Delete(t.FileOut);
@@ -128,14 +127,14 @@ namespace AudioFlash
                     
                     File.Delete(outFileNameBase);
 
-
                     ConcatenatingSampleProvider  playlist = new ConcatenatingSampleProvider(new[] { ques, ans});
+                    
+                    lg.Write($"\n---> Merging {ttsQA[QUESTION].OutFile} and {ttsQA[ANSWER].OutFile} to {outFileNameBase}");
                     
                     WaveFileWriter.CreateWaveFile16(outFileNameBase, playlist);
 
                     ques.Dispose();
                     ans.Dispose();
-                    //playlist = null;
                     
                     File.Delete(ttsQA[QUESTION].OutFile);
                     File.Delete(ttsQA[ANSWER].OutFile);
