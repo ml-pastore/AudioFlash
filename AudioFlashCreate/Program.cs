@@ -49,7 +49,7 @@ namespace AudioFlash
             lg.Write(new string('-', 50));
             lg.Write($"{DateTime.Now}");
            
-            IEnumerable<CSVInput> allQuests = GetAllQuestions(c);
+            IEnumerable<CSVInput> allQuests = CSVInput.GetAllQuestions(c);
             
             // build wav output
             int fileCntr = c.FileOutPut.StartOutNum;
@@ -59,6 +59,8 @@ namespace AudioFlash
               Environment.Exit((int) RetCodes.NoRecs);
 
             int numZeros = Convert.ToInt32(Math.Log10(numRecs)+1);
+
+            SoundUtil sndUtil = new SoundUtil();
             
             foreach (CSVInput ln in allQuests.Where(x => x.IsActive.ToUpper() == "TRUE"))
             {
@@ -97,11 +99,11 @@ namespace AudioFlash
 
                     // question or answer
                     t.TextIn = qa.QAText;
-                    t.Sound.Language = GetSoundProp(qa.Lang, c.SoundDefault.Language);
+                    t.Sound.Language = sndUtil.GetSoundProp(qa.Lang, c.SoundDefault.Language);
                     // random speaker from avail list
-                    string spkr = GetRandSpeakerName(t.Sound.Language, c.SoundDefault.Speakers);
-                    t.Sound.Speaker = GetSoundProp(spkr, c.SoundDefault.Speaker);
-                    t.Sound.ProsodyRate = GetSoundProp(qa.ProsodyRate, c.SoundDefault.ProsodyRate);
+                    string spkr = sndUtil.GetRandSpeakerName(t.Sound.Language, c.SoundDefault.Speakers);
+                    t.Sound.Speaker = sndUtil.GetSoundProp(spkr, c.SoundDefault.Speaker);
+                    t.Sound.ProsodyRate = sndUtil.GetSoundProp(qa.ProsodyRate, c.SoundDefault.ProsodyRate);
 
                     t.FileOut =  qa.OutFile ;
 
@@ -130,65 +132,6 @@ namespace AudioFlash
             Environment.Exit((int) RetCodes.Success);
         
         }
-
-        class TTS_QA
-        {
-            public string QAText {set; get;}
-            public string Lang {set; get;}
-            public string ProsodyRate {set; get;}
-            public string OutFile {set; get;}
-        }
-
-        static string GetSoundProp(string sndProp, string sndDefault)
-        {
-            string ret = sndProp.ToUpper().Trim() == "DEFAULT" ? sndDefault : sndProp;
-            return ret;
-        }
-
-         static string GetRandSpeakerName(string lang, List<Speaker> speakers)
-        {
-
-            List<Speaker> spkrs = speakers.Where(x => x.Language.ToUpper().Trim() == lang.ToUpper().Trim()).ToList();
-            int cnt = spkrs.Count;
-
-            if(cnt == 0)
-                return "DEFAULT";
-
-            var rand = new Random();
-            var spkr = spkrs[rand.Next(spkrs.Count)].Voice;
-
-            return spkr;
-            
-        }
-
-        static IEnumerable<CSVInput> GetAllQuestions(IConfig c)
-        {
-
-            List<CSVInput> ret = new List<CSVInput>();
-
-            foreach (string inCSVMask in c.FileInPut.CSVFiles)
-            {
-                Console.WriteLine(inCSVMask);
-
-                string[] parts = inCSVMask.Split('|');
-                string[] files = Directory.GetFiles(parts[0], parts[1]);
-
-                foreach (string f in files)
-                {
-                    Console.WriteLine(f);
-                    CSVInput csv = new CSVInput();
-                    List<CSVInput> tmp = csv.GetRecs(f).ToList();
-
-                    foreach (CSVInput fn in tmp)
-                        fn.SourceCSVFile = f;
-
-                    ret.AddRange(tmp);
-                }
-            }
-
-            return ret;
-
-        } // GetAllQuestions()
 
      } // class Program
    

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -36,7 +37,35 @@ public class CSVInput
 
     }
 
- 
+    public static IEnumerable<CSVInput> GetAllQuestions(IConfig c)
+    {
+
+        List<CSVInput> ret = new List<CSVInput>();
+
+        foreach (string inCSVMask in c.FileInPut.CSVFiles)
+        {
+            Console.WriteLine(inCSVMask);
+
+            string[] parts = inCSVMask.Split('|');
+            string[] files = Directory.GetFiles(parts[0], parts[1]);
+
+            foreach (string f in files)
+            {
+                Console.WriteLine(f);
+                CSVInput csv = new CSVInput();
+                List<CSVInput> tmp = csv.GetRecs(f).ToList();
+
+                foreach (CSVInput fn in tmp)
+                    fn.SourceCSVFile = f;
+
+                ret.AddRange(tmp);
+            }
+        }
+
+        return ret;
+
+    } // GetAllQuestions()
+
 }
 
 
