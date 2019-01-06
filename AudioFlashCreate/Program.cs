@@ -61,8 +61,8 @@ namespace AudioFlash
             if(numRecs == 0)
               Environment.Exit((int) RetCodes.NoRecs);
 
-            int numZeros = Convert.ToInt32(Math.Log10(numRecs)+1);
-
+            int numZerosCalc = Convert.ToInt32(Math.Log10(numRecs)+1);
+            int numZeros =  Math.Max(c.FileOutPut.OutNumPad,numZerosCalc); 
             SoundUtil sndUtil = new SoundUtil();
 
             const int QUESTION = 0;

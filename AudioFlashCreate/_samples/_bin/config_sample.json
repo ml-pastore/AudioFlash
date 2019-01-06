@@ -5,6 +5,7 @@
         "WAVPrefix": "QA_{#}",
         "StartOutNum": "0",
         "SplitQAFiles": "False",
+        "OutNumPad": "3", 
         "LogFolder": "_samples/_log"
     },
 "FileInput": 

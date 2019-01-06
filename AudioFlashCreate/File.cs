@@ -15,6 +15,7 @@ public class FileOutput
     public string WAVPrefix { get; set; }
     public  bool SplitQAFiles {set; get;}
     public int StartOutNum { get; set; }
+    public int OutNumPad { get; set; }
     public string LogFolder { get; set; }
 }
 
