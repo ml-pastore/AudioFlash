@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+
 
 namespace AudioFlash
 {
@@ -61,45 +64,40 @@ namespace AudioFlash
             int numZeros = Convert.ToInt32(Math.Log10(numRecs)+1);
 
             SoundUtil sndUtil = new SoundUtil();
+
+            const int QUESTION = 0;
+            const int ANSWER = 1;
             
+            TTS_QA[] ttsQA = {new TTS_QA(), new TTS_QA()};
+            string outFileNameBase = "";
+
             foreach (CSVInput ln in allQuests.Where(x => x.IsActive.ToUpper() == "TRUE"))
             {
      
-                string outFileName = string.Format(@"{0}\{1}.wav",c.FileOutPut.SoundFolder
+                outFileNameBase = string.Format(@"{0}\{1}.wav",c.FileOutPut.SoundFolder
                     , c.FileOutPut.WAVPrefix.Replace("{#}", fileCntr.ToString().PadLeft(numZeros,'0')));
-
                 
-                // question and answer might have different output characteristics (language, voice, prosody rate)
-                List<TTS_QA> QA = new List<TTS_QA>();
-
                 int pauseSec = Convert.ToInt32(ln.AnswerWaitSeconds) * 1000;
                 string pauseText = $"<break time=\"{pauseSec}ms\"/>";
 
                 string question = $"{ln.Question} {pauseText}";
+        
+                ttsQA[QUESTION] = new TTS_QA{QAText = question,
+                    Lang = ln.QuesLang, ProsodyRate = ln.QuesProsodyRate, OutFile = outFileNameBase.Replace(".wav","_ques.wav")};
 
-                if(! c.FileOutPut.SplitQAFiles)
-                    question = String.Concat(question, " " , ln.Answer); 
+                ttsQA[ANSWER] =new TTS_QA{QAText = ln.Answer,
+                    Lang = ln.AnsLang, ProsodyRate = ln.AnsProsodyRate, OutFile = outFileNameBase.Replace(".wav","_resp.wav")}; // append "resp" for sorting purposes if Q/A files are separate
                 
-                // question
-                QA.Add(new TTS_QA{QAText = question,
-                    Lang = ln.QuesLang, ProsodyRate = ln.QuesProsodyRate, OutFile = outFileName.Replace(".wav","_ques.wav")});
-
-                if(c.FileOutPut.SplitQAFiles)
-                {
-                    QA.Add(new TTS_QA{QAText = ln.Answer,
-                        Lang = ln.AnsLang, ProsodyRate = ln.AnsProsodyRate, OutFile = outFileName.Replace(".wav","_resp.wav")});
-                }
-                
-                foreach(TTS_QA qa in QA)
+                foreach(TTS_QA qa in ttsQA)
                 {
                     TextToSpeech t = new TextToSpeech();
 
                     ISound sndOut = new SoundOutput(c.SoundDefault);
                     t.Sound = sndOut;
 
-                    // question or answer
                     t.TextIn = qa.QAText;
                     t.Sound.Language = sndUtil.GetSoundProp(qa.Lang, c.SoundDefault.Language);
+                    
                     // random speaker from avail list
                     string spkr = sndUtil.GetRandSpeakerName(t.Sound.Language, c.SoundDefault.Speakers);
                     t.Sound.Speaker = sndUtil.GetSoundProp(spkr, c.SoundDefault.Speaker);
@@ -121,9 +119,32 @@ namespace AudioFlash
 
                     await t.OutPutTTS(c.Authentication);
                 }
+
+                if(! c.FileOutPut.SplitQAFiles) // need to merge them 
+                {
+
+                    var ques = new AudioFileReader(ttsQA[QUESTION].OutFile);
+                    var ans = new AudioFileReader(ttsQA[ANSWER].OutFile);
+                    
+                    File.Delete(outFileNameBase);
+
+
+                    ConcatenatingSampleProvider  playlist = new ConcatenatingSampleProvider(new[] { ques, ans});
+                    
+                    WaveFileWriter.CreateWaveFile16(outFileNameBase, playlist);
+
+                    ques.Dispose();
+                    ans.Dispose();
+                    //playlist = null;
+                    
+                    File.Delete(ttsQA[QUESTION].OutFile);
+                    File.Delete(ttsQA[ANSWER].OutFile);
+                }
+                    
               
                 fileCntr++;
             }
+            
 
             lg.Write("Done");
             lg.Dispose();

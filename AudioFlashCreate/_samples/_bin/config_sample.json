@@ -4,7 +4,7 @@
         "SoundFolder": "_samples/_output",
         "WAVPrefix": "QA_{#}",
         "StartOutNum": "0",
-        "SplitQAFiles": "True",
+        "SplitQAFiles": "False",
         "LogFolder": "_samples/_log"
     },
 "FileInput": 
