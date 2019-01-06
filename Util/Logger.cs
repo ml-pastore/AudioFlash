@@ -15,7 +15,6 @@ public class Logger : ILogger, IDisposable
     private string _logFile;
     public string LogFile{
         set{
-             _sw = new StreamWriter(value, true);
             _logFile = value;
             }
         get{
@@ -24,7 +23,9 @@ public class Logger : ILogger, IDisposable
     }
     public void Write(string s)
     {
+          _sw = new StreamWriter(_logFile, true);
          _sw.WriteLine(s);  
+         _sw.Close();
     }
  
     public void Dispose()
