@@ -3,4 +3,4 @@ Cities,TRUE,What is the capitol of Rhode Island?,Providence,2,Default,Default,en
 Food,FALSE,True or false. An apple is not a vegetable.,TRUE,2,en-US,-20%,en-US,-20%
 Ethics,FALSE,Yes or no. Fraud is generally OK.,No,2,en-US,Default,Default,Default
 Animals,FALSE,Which is false? A. Kittens are young cats. B. Puppies are young dogs. C. Heifers are young cows.,None are false.,2,en-US,30%,en-US,30%
-Language,TRUE,"Der, die, oder das.  Aktivität.",Die,2,de-DE,-20%,de-DE,-20%
+Language,TRUE,Translate: The girl is athletic.,Das Mädchen ist athletisch.,2,en-US,Default,de-DE,-20%
