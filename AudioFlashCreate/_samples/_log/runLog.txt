@@ -25,3 +25,30 @@ Spkr: Hedda, Text: Falsch ... -> _samples/_output/QA_003_resp.wav
 
 ---> Merging _samples/_output/QA_003_ques.wav and _samples/_output/QA_003_resp.wav to _samples/_output/QA_003.wav
 Done
+--------------------------------------------------
+1/6/2019 7:15:51 PM
+--------------------
+Src file: _samples/_input/sample_01.csv, Line#: 0
+Spkr: JessaRUS, Text: What is the capitol  ... -> _samples/_output/QA_000_ques.wav
+Spkr: BenjaminRUS, Text: Providence ... -> _samples/_output/QA_000_resp.wav
+
+---> Merging _samples/_output/QA_000_ques.wav and _samples/_output/QA_000_resp.wav to _samples/_output/QA_000.wav
+--------------------
+Src file: _samples/_input/sample_01.csv, Line#: 4
+Spkr: ZiraRUS, Text: Translate: The girl  ... -> _samples/_output/QA_001_ques.wav
+Spkr: Stefan, Apollo, Text: Das Mädchen ist athl ... -> _samples/_output/QA_001_resp.wav
+
+---> Merging _samples/_output/QA_001_ques.wav and _samples/_output/QA_001_resp.wav to _samples/_output/QA_001.wav
+--------------------
+Src file: _samples/_input/sample_02.csv, Line#: 0
+Spkr: BenjaminRUS, Text: On which side sits t ... -> _samples/_output/QA_002_ques.wav
+Spkr: JessaRUS, Text: On the right side. ... -> _samples/_output/QA_002_resp.wav
+
+---> Merging _samples/_output/QA_002_ques.wav and _samples/_output/QA_002_resp.wav to _samples/_output/QA_002.wav
+--------------------
+Src file: _samples/_input/sample_02.csv, Line#: 1
+Spkr: Hedda, Text:  Wahr oder falsch. E ... -> _samples/_output/QA_003_ques.wav
+Spkr: Hedda, Text: Falsch ... -> _samples/_output/QA_003_resp.wav
+
+---> Merging _samples/_output/QA_003_ques.wav and _samples/_output/QA_003_resp.wav to _samples/_output/QA_003.wav
+Done
