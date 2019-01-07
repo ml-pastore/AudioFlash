@@ -77,7 +77,7 @@ namespace AudioFlash
                 lg.Write("-".PadLeft(20,'-'));
                 lg.Write($"Src file: {ln.SourceCSVFile}, Line#: {ln.FileLineNum}");
 
-                outFileNameBase = string.Format(@"{0}\{1}.wav",c.FileOutPut.SoundFolder
+                outFileNameBase = string.Format(@"{0}/{1}.wav",c.FileOutPut.SoundFolder
                     , c.FileOutPut.WAVPrefix.Replace("{#}", fileCntr.ToString().PadLeft(numZeros,'0')));
                 
                 int pauseSec = Convert.ToInt32(ln.AnswerWaitSeconds) * 1000;
