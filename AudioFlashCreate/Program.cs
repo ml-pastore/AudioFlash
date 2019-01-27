@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -144,6 +145,14 @@ namespace AudioFlash
                 fileCntr++;
             }
             
+            // update config file with last counter ref
+            String cOut = File.ReadAllText(configName);
+            string incrTxt = $"\"StartOutNum\":"; 
+            
+            cOut = Regex.Replace(cOut, $"{incrTxt}\\s+\"\\d+\""
+                ,$"{incrTxt} \"{fileCntr.ToString()}\"" );
+                
+            File.WriteAllText(configName,cOut);
 
             lg.Write("Done");
             lg.Dispose();
